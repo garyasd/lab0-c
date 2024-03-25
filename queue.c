@@ -31,10 +31,10 @@ void q_free(struct list_head *l)
     if (l == NULL) {
         return;
     }
-    element_t *cur = l->next;
-    while (cur->list != l) {
-        element_t *del = cur;
-        cur = cur->list.next;
+    struct list_head *cur = l->next;
+    while (cur != l) {
+        element_t *del = container_of(cur, element_t, list);
+        cur = cur->next;
         free(del->value);
         free(del);
     }
