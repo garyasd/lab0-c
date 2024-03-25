@@ -38,6 +38,18 @@ void q_free(struct list_head *l)
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
+    element_t *listNode = (element_t *) malloc(sizeof(element_t));
+    if (listNode == NULL) {
+        printf("listNode malloc failed");
+        return false;
+    }
+    // listNode store string
+    int slen = strlen(s);
+    strncpy(listNode->value, s, slen);
+    listNode->list.prev = head->prev;
+    listNode->list.next = head;
+    listNode.prev->next = listNode;
+    listNode->next->prev = listNode;
     return true;
 }
 
