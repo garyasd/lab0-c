@@ -28,11 +28,17 @@ struct list_head *q_new()
 /* Free all storage used by queue */
 void q_free(struct list_head *l)
 {
-    struct list_head *nxt = l->next;
-    while (l) {
-        free(l);
-        l = nxt;
+    if (l == NULL) {
+        return;
     }
+    element_t *cur = l->next;
+    while (cur->list != l) {
+        element_t *del = cur;
+        cur = cur->list.next;
+        free(del->value);
+        free(del);
+    }
+    free(l);
 }
 
 /* Insert an element at head of queue */
@@ -46,10 +52,10 @@ bool q_insert_head(struct list_head *head, char *s)
     // listNode store string
     int slen = strlen(s);
     strncpy(listNode->value, s, slen);
-    listNode->list.prev = head->prev;
-    listNode->list.next = head;
-    listNode.prev->next = listNode;
-    listNode->next->prev = listNode;
+    listNode->list.prev = head;
+    listNode->list.next = head->next;
+    head->next->prev = &listNode->list;
+    head->next = &listNode->list;
     return true;
 }
 
