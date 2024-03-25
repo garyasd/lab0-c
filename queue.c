@@ -65,13 +65,16 @@ bool q_delete_mid(struct list_head *head)
         printf("queue is empty.");
         return false;
     }
-    struct list_head *slow = head;
+    struct list_head **slow = &head;
     struct list_head *fast = head->next;
     while (fast && fast->next) {
         fast = fast->next->next;
-        slow = slow->next;
+        slow = &(*slow)->next;
     }
-    free(slow);
+    struct list_head *temp = *slow;
+    (*slow)->next->prev = (*slow)->prev;
+    *slow = (*slow)->next;
+    free(temp);
     return true;
 }
 
