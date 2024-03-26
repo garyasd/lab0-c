@@ -84,9 +84,9 @@ int q_size(struct list_head *head)
         return 0;
     }
     int q_len = 0;
-    for (struct list_head *cur = head; cur != NULL; cur = cur->next) {
+    struct list_head *cur;
+    list_for_each (cur, head)
         q_len++;
-    }
     return q_len;
 }
 
