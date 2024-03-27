@@ -51,7 +51,13 @@ bool q_insert_head(struct list_head *head, char *s)
     }
     // listNode store string
     int slen = strlen(s);
-    strncpy(listNode->value, s, slen);
+    listNode->value = (char *) malloc(sizeof(char) * (slen + 1));
+    if (listNode->value == NULL) {
+        printf("string malloc failed");
+        free(listNode);
+        return false;
+    }
+    strncpy(listNode->value, s, slen + 1);
     listNode->list.prev = head;
     listNode->list.next = head->next;
     head->next->prev = &listNode->list;
