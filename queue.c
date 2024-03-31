@@ -47,7 +47,7 @@ bool q_insert_head(struct list_head *head, char *s)
         printf("entry malloc failed\n");
         return false;
     }
-    // listNode store string
+    // Entry value store string
     addEntry->value = strdup(s);
     if (!addEntry->value) {
         printf("string malloc failed");
@@ -131,20 +131,17 @@ int q_size(struct list_head *head)
 bool q_delete_mid(struct list_head *head)
 {
     // https://leetcode.com/problems/delete-the-middle-node-of-a-linked-list/
-    if (head == NULL) {
-        printf("queue is empty.");
+    if (head == NULL || list_empty(head)) {
         return false;
     }
-    struct list_head **slow = &head;
-    struct list_head *fast = head->next;
-    while (fast && fast->next) {
-        fast = fast->next->next;
-        slow = &(*slow)->next;
+    struct list_head *first = head->next;
+    struct list_head *last = head->prev;
+    while (!(first == last || first->next == last)) {
+        first = first->next;
+        last = last->prev;
     }
-    struct list_head *temp = *slow;
-    (*slow)->next->prev = (*slow)->prev;
-    *slow = (*slow)->next;
-    free(temp);
+    list_del(first);
+    q_release_element(list_entry(first, element_t, list));
     return true;
 }
 
