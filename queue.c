@@ -17,7 +17,7 @@ struct list_head *q_new()
     struct list_head *head =
         (struct list_head *) malloc(sizeof(struct list_head));
     if (head == NULL) {
-        printf("malloc faild");
+        printf("malloc faild\n");
         return NULL;
     }
     INIT_LIST_HEAD(head);
@@ -30,7 +30,7 @@ void q_free(struct list_head *l)
     if (l == NULL) {
         return;
     }
-    element_t *cur_entry = NULL, nxt_entry = NULL;
+    element_t *cur_entry = NULL, *nxt_entry = NULL;
     list_for_each_entry_safe (cur_entry, nxt_entry, l, list)
         q_release_element(cur_entry);
     free(l);
@@ -39,24 +39,22 @@ void q_free(struct list_head *l)
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
-    element_t *listNode = (element_t *) malloc(sizeof(element_t));
-    if (listNode == NULL) {
-        printf("listNode malloc failed");
+    if (!head) {
+        return false;
+    }
+    element_t *addEntry = (element_t *) malloc(sizeof(element_t));
+    if (!addEntry) {
+        printf("entry malloc failed\n");
         return false;
     }
     // listNode store string
-    int slen = strlen(s);
-    listNode->value = (char *) malloc(sizeof(char) * (slen + 1));
-    if (listNode->value == NULL) {
+    addEntry->value = strdup(s);
+    if (!addEntry->value) {
         printf("string malloc failed");
-        free(listNode);
+        free(addEntry);
         return false;
     }
-    strncpy(listNode->value, s, slen + 1);
-    listNode->list.prev = head;
-    listNode->list.next = head->next;
-    head->next->prev = &listNode->list;
-    head->next = &listNode->list;
+    list_add(&addEntry->list, head);
     return true;
 }
 
