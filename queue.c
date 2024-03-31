@@ -20,8 +20,7 @@ struct list_head *q_new()
         printf("malloc faild");
         return NULL;
     }
-    head->prev = head;
-    head->next = head;
+    INIT_LIST_HEAD(head);
     return head;
 }
 
