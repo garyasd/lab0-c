@@ -61,24 +61,22 @@ bool q_insert_head(struct list_head *head, char *s)
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
-    element_t *listNode = (element_t *) malloc(sizeof(element_t));
-    if (listNode == NULL) {
-        printf("listNode malloc failed");
+    if (!head) {
         return false;
     }
-    // listNode store string
-    int slen = strlen(s);
-    listNode->value = (char *) malloc(sizeof(char) * (slen + 1));
-    if (listNode->value == NULL) {
+    element_t *addEntry = (element_t *) malloc(sizeof(element_t));
+    if (!addEntry) {
+        printf("Entry malloc failed");
+        return false;
+    }
+    // Entry value store string
+    addEntry->value = strdup(s);
+    if (!addEntry->value) {
         printf("string malloc failed");
-        free(listNode);
+        free(addEntry);
         return false;
     }
-    strncpy(listNode->value, s, slen + 1);
-    listNode->list.prev = head->prev;
-    listNode->list.next = head;
-    head->prev->next = &listNode->list;
-    head->prev = &listNode->list;
+    list_add_tail(&addEntry->list, head);
     return true;
 }
 
