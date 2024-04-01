@@ -184,18 +184,13 @@ void q_swap(struct list_head *head)
     if (!head || list_empty(head) || list_is_singular(head)) {
         return;
     }
-
-    struct list_head *pre = head;
-    struct list_head *cur = head->next;
-    while (cur != head && cur->next != head) {
-        struct list_head *nxt = cur->next;
-        pre->next = nxt;
-        cur->next = nxt->next;
-        cur->prev = nxt;
-        nxt->prev = pre;
-        nxt->next = cur;
-        pre = cur;
-        cur = cur->next;
+    struct list_head *cur, *nxt;
+    list_for_each_safe (cur, nxt, head) {
+        if (nxt == head)
+            return;
+        list_del(cur);
+        list_add(cur, nxt);
+        nxt = cur->next;
     }
 }
 
