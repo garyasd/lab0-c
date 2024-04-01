@@ -194,24 +194,13 @@ void q_reverse(struct list_head *head)
     if (!head || list_empty(head) || list_is_singular(head)) {
         return;
     }
-    struct list_head *front = head->next;
+    struct list_head *cur, *safe;
     struct list_head *last = head->prev;
-    while (front != last && last->next != front) {
-        // swap two nodes from front and last
-        // first prev link
-        struct list_head *temp = front->prev;
-        front->prev->next = last;
-        front->prev = last->prev;
-        last->prev->next = front;
-        last->prev = temp;
-        // second next link
-        temp = front->next;
-        front->next->prev = last;
-        front->next = last->next;
-        last->next->prev = front;
-        last->next = temp;
-        last = front->prev;
-        front = temp;
+    list_for_each_safe (cur, safe, head) {
+        if (cur == last)
+            return;
+        list_del(cur);
+        list_add(cur, last);
     }
 }
 
