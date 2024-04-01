@@ -31,8 +31,10 @@ void q_free(struct list_head *l)
         return;
     }
     element_t *cur_entry = NULL, *nxt_entry = NULL;
-    list_for_each_entry_safe (cur_entry, nxt_entry, l, list)
+    list_for_each_entry_safe (cur_entry, nxt_entry, l, list) {
+        list_del(&cur_entry->list);
         q_release_element(cur_entry);
+    }
     free(l);
 }
 
@@ -92,8 +94,7 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
     if (!sp || bufsize <= value_len) {
         return NULL;
     }
-    strncpy(sp, del_item->value, strlen(del_item->value));
-    sp[value_len + 1] = '\0';
+    strncpy(sp, del_item->value, strlen(del_item->value) + 1);
     return del_item;
 }
 
@@ -109,8 +110,7 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
     if (!sp || bufsize <= value_len) {
         return NULL;
     }
-    strncpy(sp, del_item->value, strlen(del_item->value));
-    sp[value_len + 1] = '\0';
+    strncpy(sp, del_item->value, strlen(del_item->value) + 1);
     return del_item;
 }
 
@@ -181,6 +181,22 @@ bool q_delete_dup(struct list_head *head)
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
+    if (!head || list_empty(head) || list_is_singular(head)) {
+        return;
+    }
+
+    struct list_head *pre = head;
+    struct list_head *cur = head->next;
+    while (cur != head && cur->next != head) {
+        struct list_head *nxt = cur->next;
+        pre->next = nxt;
+        cur->next = nxt->next;
+        cur->prev = nxt;
+        nxt->prev = pre;
+        nxt->next = cur;
+        pre = cur;
+        cur = cur->next;
+    }
 }
 
 /* Reverse elements in queue */
