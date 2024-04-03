@@ -89,7 +89,7 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
     if (!sp || bufsize <= value_len) {
         return NULL;
     }
-    strncpy(sp, del_item->value, strlen(del_item->value) + 1);
+    strncpy(sp, del_item->value, value_len + 1);
     return del_item;
 }
 
@@ -105,7 +105,7 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
     if (!sp || bufsize <= value_len) {
         return NULL;
     }
-    strncpy(sp, del_item->value, strlen(del_item->value) + 1);
+    strncpy(sp, del_item->value, value_len + 1);
     return del_item;
 }
 
@@ -203,6 +203,21 @@ void q_reverse(struct list_head *head)
 void q_reverseK(struct list_head *head, int k)
 {
     // https://leetcode.com/problems/reverse-nodes-in-k-group/
+    if (head == NULL || list_empty(head)) {
+        return;
+    }
+    int count = 0;
+    struct list_head *cur, *safe;
+    list_for_each_safe (cur, safe, head) {
+        count++;
+        if (count == k) {
+            while (count-- > 1) {
+                struct list_head *pre = cur->prev;
+                list_del(pre);
+                list_add_tail(pre, safe);
+            }
+        }
+    }
 }
 
 /* Sort elements of queue in ascending/descending order */
