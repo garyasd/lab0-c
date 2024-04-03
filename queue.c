@@ -189,12 +189,8 @@ void q_reverse(struct list_head *head)
         return;
     }
     struct list_head *cur, *safe;
-    struct list_head *last = head->prev;
     list_for_each_safe (cur, safe, head) {
-        if (cur == last)
-            return;
-        list_del(cur);
-        list_add(cur, last);
+        list_move(cur, head);
     }
 }
 
