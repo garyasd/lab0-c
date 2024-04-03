@@ -17,7 +17,6 @@ struct list_head *q_new()
     struct list_head *head =
         (struct list_head *) malloc(sizeof(struct list_head));
     if (head == NULL) {
-        printf("malloc faild\n");
         return NULL;
     }
     INIT_LIST_HEAD(head);
@@ -46,13 +45,11 @@ bool q_insert_head(struct list_head *head, char *s)
     }
     element_t *addEntry = (element_t *) malloc(sizeof(element_t));
     if (!addEntry) {
-        printf("entry malloc failed\n");
         return false;
     }
     // Entry value store string
     addEntry->value = strdup(s);
     if (!addEntry->value) {
-        printf("string malloc failed");
         free(addEntry);
         return false;
     }
@@ -68,13 +65,11 @@ bool q_insert_tail(struct list_head *head, char *s)
     }
     element_t *addEntry = (element_t *) malloc(sizeof(element_t));
     if (!addEntry) {
-        printf("Entry malloc failed");
         return false;
     }
     // Entry value store string
     addEntry->value = strdup(s);
     if (!addEntry->value) {
-        printf("string malloc failed");
         free(addEntry);
         return false;
     }
