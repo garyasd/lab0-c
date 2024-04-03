@@ -170,15 +170,14 @@ bool q_delete_dup(struct list_head *head)
 void q_swap(struct list_head *head)
 {
     // https://leetcode.com/problems/swap-nodes-in-pairs/
-    if (!head || list_empty(head) || list_is_singular(head)) {
+    if (!head || list_empty(head)) {
         return;
     }
     struct list_head *cur, *nxt;
     list_for_each_safe (cur, nxt, head) {
         if (nxt == head)
             return;
-        list_del(cur);
-        list_add(cur, nxt);
+        list_move(cur, nxt);
         nxt = cur->next;
     }
 }
