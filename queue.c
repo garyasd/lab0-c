@@ -202,15 +202,13 @@ void q_reverseK(struct list_head *head, int k)
         return;
     }
     int count = 0;
-    struct list_head *cur, *safe;
+    struct list_head *cur, *safe, *pre = head;
     list_for_each_safe (cur, safe, head) {
+        list_move(cur, pre);
         count++;
         if (count == k) {
-            while (count-- > 1) {
-                struct list_head *pre = cur->prev;
-                list_del(pre);
-                list_add_tail(pre, safe);
-            }
+            count = 0;
+            pre = safe->prev;
         }
     }
 }
