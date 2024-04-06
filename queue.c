@@ -31,7 +31,6 @@ void q_free(struct list_head *l)
     }
     element_t *cur_entry = NULL, *nxt_entry = NULL;
     list_for_each_entry_safe (cur_entry, nxt_entry, l, list) {
-        list_del(&cur_entry->list);
         q_release_element(cur_entry);
     }
     free(l);
@@ -63,17 +62,7 @@ bool q_insert_tail(struct list_head *head, char *s)
     if (!head) {
         return false;
     }
-    element_t *addEntry = (element_t *) malloc(sizeof(element_t));
-    if (!addEntry) {
-        return false;
-    }
-    // Entry value store string
-    addEntry->value = strdup(s);
-    if (!addEntry->value) {
-        free(addEntry);
-        return false;
-    }
-    list_add_tail(&addEntry->list, head);
+    q_insert_head(head->prev, s);
     return true;
 }
 
@@ -85,11 +74,11 @@ element_t *q_remove_head(struct list_head *head, char *sp, size_t bufsize)
     }
     element_t *del_item = list_first_entry(head, element_t, list);
     list_del(&del_item->list);
-    size_t value_len = strlen(del_item->value);
-    if (!sp || bufsize <= value_len) {
+    int len = strlen(del_item->value);
+    if (!sp || bufsize <= len) {
         return NULL;
     }
-    strncpy(sp, del_item->value, value_len + 1);
+    strncpy(sp, del_item->value, len + 1);
     return del_item;
 }
 
@@ -99,14 +88,7 @@ element_t *q_remove_tail(struct list_head *head, char *sp, size_t bufsize)
     if (head == NULL || list_empty(head)) {
         return NULL;
     }
-    element_t *del_item = list_last_entry(head, element_t, list);
-    list_del(&del_item->list);
-    size_t value_len = strlen(del_item->value);
-    if (!sp || bufsize <= value_len) {
-        return NULL;
-    }
-    strncpy(sp, del_item->value, value_len + 1);
-    return del_item;
+    return q_remove_head(head->prev->prev, sp, bufsize);
 }
 
 /* Return number of elements in queue */
@@ -235,7 +217,7 @@ void q_merge_sorted(struct list_head *first,
 struct list_head *q_middle(struct list_head *head)
 {
     if (!head || list_empty(head))
-        return head;
+        return NULL;
     struct list_head *first = head->next;
     struct list_head *last = head->prev;
     while (first != last && first->next != last) {
