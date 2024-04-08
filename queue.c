@@ -16,10 +16,8 @@ struct list_head *q_new()
 {
     struct list_head *head =
         (struct list_head *) malloc(sizeof(struct list_head));
-    if (!head) {
-        return head;
-    }
-    INIT_LIST_HEAD(head);
+    if (head)
+        INIT_LIST_HEAD(head);
     return head;
 }
 
@@ -39,15 +37,14 @@ void q_free(struct list_head *l)
 /* Insert an element at head of queue */
 bool q_insert_head(struct list_head *head, char *s)
 {
-    if (!head) {
+    if (!head || !s) {
         return false;
     }
     element_t *addEntry = (element_t *) malloc(sizeof(element_t));
     if (!addEntry) {
         return false;
     }
-    size_t len = strlen(s);
-    addEntry->value = malloc(sizeof(char) * (len + 1));
+    addEntry->value = strdup(s);
     if (!addEntry->value) {
         q_release_element(addEntry);
         return false;
@@ -57,19 +54,16 @@ bool q_insert_head(struct list_head *head, char *s)
         q_release_element(addEntry);
         return false;
     }
-    strncpy(addEntry->value, s, len);
-    *(addEntry->value + len) = '\0';
     return true;
 }
 
 /* Insert an element at tail of queue */
 bool q_insert_tail(struct list_head *head, char *s)
 {
-    if (!head) {
+    if (!head || !s) {
         return false;
     }
-    q_insert_head(head->prev, s);
-    return true;
+    return q_insert_head(head->prev, s);
 }
 
 /* Remove an element from head of queue */
@@ -300,7 +294,16 @@ int q_merge(struct list_head *head, bool descend)
     if (list_is_singular(head)) {
         return list_first_entry(head, queue_contex_t, chain)->size;
     }
-
-
-    return 0;
+    LIST_HEAD(right);
+    struct list_head *mid = q_middle(head);
+    list_cut_position(&right, mid, head->prev);
+    q_merge(head, descend);
+    q_merge(&right, descend);
+    queue_contex_t *head_q = list_first_entry(head, queue_contex_t, chain);
+    queue_contex_t *right_q = list_first_entry(&right, queue_contex_t, chain);
+    q_merge_sorted(head_q->q, right_q->q, descend);
+    head_q->size += right_q->size;
+    right_q->size = 0;
+    list_splice_tail_init(&right, head);
+    return head_q->size;
 }
